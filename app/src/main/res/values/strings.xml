@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">clean_arch_koin</string>
+    <string name="app_name">News App</string>
+
+    <string name="favorites_action">Favorites</string>
+    <string name="sort_action">Sort</string>
+    <string name="filter_action">Filter</string>
+    <string name="sort_dialog_title">Sort by:</string>
+    <string name="filter_dialog_title">Filter:</string>
+    <string name="subtitle_no_filter">no filter</string>
+
+    <string-array name="sort_value_name">
+        <item>publishedAt</item>
+        <item>popularity</item>
+    </string-array>
+
+    <string-array name="sort_values">
+        <item>time of publication</item>
+        <item>popularity</item>
+    </string-array>
+
+    <string-array name="filter_value_name">
+        <item>business-insider</item>
+        <item>the-times-of-india</item>
+    </string-array>
+
+    <string-array name="filter_values">
+        <item>Business Insider</item>
+        <item>The Times of India</item>
+    </string-array>
 </resources>

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.test">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -14,8 +16,7 @@
         android:usesCleartextTraffic="true"
         tools:node="merge">
 
-        <activity
-            android:name=".activity.MainActivity">
+        <activity android:name=".activity.news.NewsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
