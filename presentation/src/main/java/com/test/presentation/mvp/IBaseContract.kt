@@ -1,4 +1,4 @@
-package com.test.presentation
+package com.test.presentation.mvp
 
 interface IBaseContract {
 

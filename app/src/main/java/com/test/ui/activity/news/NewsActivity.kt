@@ -1,4 +1,4 @@
-package com.test.activity.news
+package com.test.ui.activity.news
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -10,24 +10,29 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.test.R
-import com.test.activity.BaseActivity
 import com.test.di.KOIN_KEY_SCOPE_NEWS_ACTIVITY
 import com.test.domain.model.New
-import com.test.presentation.news.INewsContract
+import com.test.presentation.mvp.news.INewsContract
+import com.test.presentation.routers.INewsRouter
+import com.test.ui.activity.BaseActivity
+import com.test.ui.adapter.NewsAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.toast
 import org.joda.time.DateTime
 import org.koin.android.ext.android.inject
 import org.koin.android.scope.ext.android.bindScope
 import org.koin.android.scope.ext.android.getOrCreateScope
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NewsActivity : BaseActivity(), INewsContract.View {
+class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapterListener {
 
     private val presenter by inject<INewsContract.Presenter>()
+    private val router by inject<INewsRouter> { parametersOf(this) }
 
     lateinit var newsAdapter: NewsAdapter
 
@@ -78,6 +83,7 @@ class NewsActivity : BaseActivity(), INewsContract.View {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.favorites_action -> presenter.onFavoritesActionClick()
             R.id.sort_action -> presenter.onSortActionClick()
             R.id.filter_action -> presenter.onFilterActionClick()
             else -> return false
@@ -93,7 +99,7 @@ class NewsActivity : BaseActivity(), INewsContract.View {
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter()
+        newsAdapter = NewsAdapter(this)
         rvNews.adapter = newsAdapter
         rvNews.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         val lm = LinearLayoutManager(this)
@@ -195,8 +201,22 @@ class NewsActivity : BaseActivity(), INewsContract.View {
         toolbar.subtitle = filter ?: getString(R.string.subtitle_no_filter)
     }
 
+    override fun navigateToFavoritesScreen() {
+        router.navigateToFavoritesScreen()
+    }
+
+    override fun showError(message: String?) {
+        toast(message ?: getString(R.string.default_error_message))
+    }
+
     override fun onDestroy() {
         presenter.view = null
+        presenter.onUnsubscribe()
+        presenter.onDestroy()
         super.onDestroy()
+    }
+
+    override fun onNewClick(new: New) {
+        presenter.onNewClick(new)
     }
 }

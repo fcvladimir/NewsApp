@@ -21,16 +21,24 @@ interface IRepository<V> {
          * Fetch News
          */
         class FetchNews(val page: Int, val pageSize: Int, val sources: String?, val fromDate: String, val toDate: String, val sortBy: String) : Get<List<New>>
+
+        /**
+         * Fetch Favorite News
+         */
+        class FetchFavoriteNews : Get<List<New>>
     }
 
-    interface Update<V>
+    interface Update<V> {
+
+        /**
+         * Dispatch New to Favorites
+         */
+        class DispatchNewToFavorites(val new: New) : Update<List<New>>
+    }
 
     interface Delete
 
     interface Observe
 
-    class AuthError(message: String = "") : Exception(message)
-    class ApiError(message: String = "") : Exception(message)
-    class NoItemsFoundException(message: String = "") : Exception(message)
 }
 

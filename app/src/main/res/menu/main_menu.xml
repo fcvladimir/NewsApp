@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/favorites_action"
+        android:icon="@drawable/ic_heart_24dp"
+        android:title="@string/favorites_action"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/sort_action"
         android:title="@string/sort_action"
         app:showAsAction="collapseActionView" />

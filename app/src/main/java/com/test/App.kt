@@ -2,6 +2,7 @@ package com.test
 
 import android.app.Application
 import com.test.di.mainModule
+import io.realm.Realm
 import org.koin.android.ext.android.startKoin
 import org.koin.android.logger.AndroidLogger
 import org.koin.log.EmptyLogger
@@ -21,5 +22,7 @@ class App : Application() {
                     EmptyLogger()
                 }
         )
+
+        Realm.init(this)
     }
 }

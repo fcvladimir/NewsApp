@@ -16,13 +16,19 @@
         android:usesCleartextTraffic="true"
         tools:node="merge">
 
-        <activity android:name=".activity.news.NewsActivity">
+        <activity
+            android:name="com.test.ui.activity.news.NewsActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.test.ui.activity.favorites.FavoritesActivity"
+            android:label="@string/favorites_title"
+            android:screenOrientation="portrait" />
 
     </application>
 

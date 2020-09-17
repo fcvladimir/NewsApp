@@ -1,9 +1,12 @@
-package com.test.presentation.news
+package com.test.presentation.mvp.news
 
+import com.test.domain.model.New
+import com.test.domain.usecase.favorite.DispatchNewToFavoritesUc
 import com.test.domain.usecase.news.FetchNewsUc
 
 class NewsPresenter(
-        private val fetchNews: FetchNewsUc
+        private val fetchNews: FetchNewsUc,
+        private val dispatchNewToFavorites: DispatchNewToFavoritesUc
 ) : INewsContract.Presenter {
 
     private var page = 1
@@ -29,12 +32,7 @@ class NewsPresenter(
                 },
                 onError = {
                     view?.renderNetworkProcessing(false)
-//                    when (it) {
-//                        is NoInternetConnectionError -> {
-//                            view?.showNoInternetConnectionError()
-//                        }
-//                        else -> view?.showServerError()
-//                    }
+                    view?.showError(it.message)
                 },
                 param = FetchNewsUc.Param(1, pageSize, sources, fromDate, toDate, sortBy)
         )
@@ -54,12 +52,7 @@ class NewsPresenter(
                 },
                 onError = {
                     view?.renderNetworkProcessing(false)
-//                    when (it) {
-//                        is NoInternetConnectionError -> {
-//                            view?.showNoInternetConnectionError()
-//                        }
-//                        else -> view?.showServerError()
-//                    }
+                    view?.showError(it.message)
                 },
                 param = FetchNewsUc.Param(this@NewsPresenter.page, pageSize, sources, fromDate, toDate, sortBy)
         )
@@ -97,6 +90,10 @@ class NewsPresenter(
         view?.updateSubtitle(this@NewsPresenter.sources)
     }
 
+    override fun onFavoritesActionClick() {
+        view?.navigateToFavoritesScreen()
+    }
+
     override fun onSortActionClick() {
         view?.renderSortByDialog()
     }
@@ -105,11 +102,33 @@ class NewsPresenter(
         view?.renderFilterDialog()
     }
 
+    override fun onNewClick(new: New) {
+        dispatchNewToFavorites.execute(
+                onSuccess = {
+                    view?.renderNetworkProcessing(false)
+//                    if (it.isNotEmpty()) {
+//                        this@NewsPresenter.page = 2
+//                    }
+//                    view?.showNews(it, true)
+                },
+                doOnSubscribe = {
+                    view?.renderNetworkProcessing(true)
+                },
+                onError = {
+                    view?.renderNetworkProcessing(false)
+                    view?.showError(it.message)
+                },
+                param = DispatchNewToFavoritesUc.Param(new)
+        )
+    }
+
     override fun onUnsubscribe() {
         fetchNews.clear()
+        dispatchNewToFavorites.clear()
     }
 
     override fun onDestroy() {
         fetchNews.dispose()
+        dispatchNewToFavorites.dispose()
     }
 }

@@ -1,7 +1,7 @@
-package com.test.presentation.news
+package com.test.presentation.mvp.news
 
 import com.test.domain.model.New
-import com.test.presentation.IBaseContract
+import com.test.presentation.mvp.IBaseContract
 
 interface INewsContract {
 
@@ -26,6 +26,10 @@ interface INewsContract {
         fun updateTitle(sort: String)
 
         fun updateSubtitle(filter: String?)
+
+        fun navigateToFavoritesScreen()
+
+        fun showError(message: String?)
     }
 
     interface Presenter : IBaseContract.Presenter<View> {
@@ -46,8 +50,12 @@ interface INewsContract {
 
         fun onFilterSelected(filterValue: ArrayList<String>)
 
+        fun onFavoritesActionClick()
+
         fun onSortActionClick()
 
         fun onFilterActionClick()
+
+        fun onNewClick(new: New)
     }
 }

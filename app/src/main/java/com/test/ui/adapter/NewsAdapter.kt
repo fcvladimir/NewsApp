@@ -1,4 +1,4 @@
-package com.test.activity.news
+package com.test.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.test.R
 import com.test.domain.model.New
 import kotlinx.android.synthetic.main.item_new.view.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import java.text.SimpleDateFormat
+import java.util.*
 
-class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NewsAdapter(private val newsAdapterListener: NewsAdapterListener?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var newsList = mutableListOf<New>()
 
@@ -31,11 +34,18 @@ class NewsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             } else {
                 new.source?.name
             }
-            tvNewDate.text = "${new.publishedAt}"
+            tvNewDate.text = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(new.publishedAt)
+            onClick {
+                newsAdapterListener?.onNewClick(new)
+            }
         }
     }
 
     private fun getItem(position: Int) = newsList[position]
 
     inner class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    interface NewsAdapterListener {
+        fun onNewClick(new: New)
+    }
 }

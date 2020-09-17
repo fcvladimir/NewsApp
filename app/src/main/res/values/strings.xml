@@ -1,12 +1,19 @@
 <resources>
     <string name="app_name">News App</string>
 
+    <string name="default_error_message">Error occurred</string>
+
+    <!--News Screen-->
     <string name="favorites_action">Favorites</string>
     <string name="sort_action">Sort</string>
     <string name="filter_action">Filter</string>
     <string name="sort_dialog_title">Sort by:</string>
     <string name="filter_dialog_title">Filter:</string>
     <string name="subtitle_no_filter">no filter</string>
+
+    <!--Favorites Screen-->
+    <string name="favorites_title">Favorite News</string>
+    <string name="no_favorite_news_error">There are no favorite news yet</string>
 
     <string-array name="sort_value_name">
         <item>publishedAt</item>
