@@ -5,7 +5,8 @@ import java.util.*
 data class NewEntity(
         val title: String? = null,
         val source: SourceEntity? = null,
-        val publishedAt: Date? = null
+        val publishedAt: Date? = null,
+        val urlToImage: String? = null
 )
 
 data class SourceEntity(

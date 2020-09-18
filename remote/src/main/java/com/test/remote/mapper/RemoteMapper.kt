@@ -18,6 +18,7 @@ class RemoteMapper {
         return NewEntity(input.title,
                 SourceEntity(input.source?.id,
                         input.source?.name),
-                input.publishedAt)
+                input.publishedAt,
+                input.urlToImage)
     }
 }

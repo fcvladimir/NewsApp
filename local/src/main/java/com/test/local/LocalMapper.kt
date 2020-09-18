@@ -11,7 +11,10 @@ class LocalMapper {
         return input
                 .map {
                     NewEntity(title = it.title,
-                            publishedAt = it.publishedAt)
+                            SourceEntity(it.source?.id,
+                                    it.source?.name),
+                            publishedAt = it.publishedAt,
+                            it.urlToImage)
                 }
     }
 
@@ -20,6 +23,7 @@ class LocalMapper {
         newRealm.title = input.title
         newRealm.source = fromDomainNewSource(input.source)
         newRealm.publishedAt = input.publishedAt
+        newRealm.urlToImage = input.urlToImage
         return newRealm
     }
 

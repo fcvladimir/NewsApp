@@ -1,7 +1,9 @@
 package com.test.di
 
 import com.google.gson.Gson
+import com.test.data.ImageRepository
 import com.test.data.NewsRepository
+import com.test.data.datasources.IImageDS
 import com.test.data.datasources.INewsDS
 import com.test.data.mapper.DataMapper
 import com.test.domain.IRepository
@@ -9,6 +11,7 @@ import com.test.domain.model.New
 import com.test.domain.usecase.favorite.DispatchNewToFavoritesUc
 import com.test.domain.usecase.favorite.FetchFavoriteNewsUc
 import com.test.domain.usecase.news.FetchNewsUc
+import com.test.domain.usecase.news.SaveImageUc
 import com.test.local.LocalMapper
 import com.test.local.db.LocalNewsDS
 import com.test.navigation.NewsRouter
@@ -17,6 +20,7 @@ import com.test.presentation.mvp.favorites.IFavoritesContract
 import com.test.presentation.mvp.news.INewsContract
 import com.test.presentation.mvp.news.NewsPresenter
 import com.test.presentation.routers.INewsRouter
+import com.test.remote.RemoteImageDS
 import com.test.remote.RemoteNewsDS
 import com.test.remote.mapper.RemoteMapper
 import com.test.remote.retrofit.RetrofitServiceFactory
@@ -62,9 +66,13 @@ val mainModule = module {
     * Local News DS
     * */
     single<INewsDS>(name = KOIN_NAME_DS_NEWS_LOCAL) {
-        LocalNewsDS(
-                get()
-        )
+        LocalNewsDS(get())
+    }
+    /*
+    * Remote Image DS
+    * */
+    single<IImageDS>(name = KOIN_NAME_DS_IMAGE_REMOTE) {
+        RemoteImageDS()
     }
 
     /*
@@ -75,6 +83,11 @@ val mainModule = module {
                 get(name = KOIN_NAME_DS_NEWS_REMOTE),
                 get(name = KOIN_NAME_DS_NEWS_LOCAL),
                 get()
+        )
+    }
+    factory<IRepository<String>>(name = KOIN_NAME_REPOSITORY_IMAGE) {
+        ImageRepository(
+                get(name = KOIN_NAME_DS_IMAGE_REMOTE)
         )
     }
 
@@ -102,6 +115,13 @@ val mainModule = module {
                 get(KOIN_NAME_REPOSITORY_NEWS)
         )
     }
+    factory(name = SaveImageUc::class.java.name) {
+        SaveImageUc(
+                get(),
+                get(),
+                get(KOIN_NAME_REPOSITORY_IMAGE)
+        )
+    }
 
     /*
     * Routers
@@ -112,7 +132,7 @@ val mainModule = module {
     * Presenters
     * */
     scope<INewsContract.Presenter>(scopeId = KOIN_KEY_SCOPE_NEWS_ACTIVITY) {
-        NewsPresenter(get(FetchNewsUc::class.java.name), get(DispatchNewToFavoritesUc::class.java.name))
+        NewsPresenter(get(FetchNewsUc::class.java.name), get(DispatchNewToFavoritesUc::class.java.name), get(SaveImageUc::class.java.name))
     }
     scope<IFavoritesContract.Presenter>(scopeId = KOIN_KEY_SCOPE_FAVORITES_ACTIVITY) {
         FavoritesPresenter(get(FetchFavoriteNewsUc::class.java.name))
@@ -136,6 +156,8 @@ val KOIN_KEY_SCOPE_NEWS_ACTIVITY = ScopeName.KOIN_KEY_SCOPE_NEWS_ACTIVITY.name
 val KOIN_KEY_SCOPE_FAVORITES_ACTIVITY = ScopeName.KOIN_KEY_SCOPE_FAVORITES_ACTIVITY.name
 
 val KOIN_NAME_REPOSITORY_NEWS = NewsRepository::class.java.name
+val KOIN_NAME_REPOSITORY_IMAGE = ImageRepository::class.java.name
 
 val KOIN_NAME_DS_NEWS_REMOTE = RemoteNewsDS::class.java.name
 val KOIN_NAME_DS_NEWS_LOCAL = LocalNewsDS::class.java.name
+val KOIN_NAME_DS_IMAGE_REMOTE = RemoteImageDS::class.java.name

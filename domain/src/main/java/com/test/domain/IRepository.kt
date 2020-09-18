@@ -26,6 +26,11 @@ interface IRepository<V> {
          * Fetch Favorite News
          */
         class FetchFavoriteNews : Get<List<New>>
+
+        /**
+         * Save Image
+         */
+        class SaveImage(val imageUrl: String) : Get<String>
     }
 
     interface Update<V> {

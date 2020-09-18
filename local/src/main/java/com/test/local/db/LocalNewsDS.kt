@@ -16,8 +16,8 @@ class LocalNewsDS(
     override fun dispatchNewToFavorites(newEntity: NewEntity): Completable {
         return Completable.create {
             Realm.getDefaultInstance().executeTransaction { realm ->
-                val newCustomers = mapper.fromDomainNew(newEntity)
-                realm.copyToRealmOrUpdate(newCustomers)
+                val new = mapper.fromDomainNew(newEntity)
+                realm.copyToRealmOrUpdate(new)
             }
         }
                 .subscribeOn(Schedulers.io())
@@ -26,12 +26,12 @@ class LocalNewsDS(
     override fun fetchFavoriteNews(): Single<List<NewEntity>> {
         return Single.create<List<NewEntity>> { e ->
             Realm.getDefaultInstance().executeTransaction { realm ->
-                val customers = realm.where(NewRealm::class.java).findAll()
-                if (customers.isEmpty()) {
+                val news = realm.where(NewRealm::class.java).findAll()
+                if (news.isEmpty()) {
                     e.onError(NoSuchElementException())
                     return@executeTransaction
                 }
-                e.onSuccess(mapper.fromDomainNews(customers))
+                e.onSuccess(mapper.fromDomainNews(news))
             }
         }
                 .subscribeOn(Schedulers.io())

@@ -1,15 +1,23 @@
 package com.test.ui.activity.news
 
+import android.Manifest
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.test.R
+import com.test.YYYY_MM_DD
 import com.test.di.KOIN_KEY_SCOPE_NEWS_ACTIVITY
 import com.test.domain.model.New
 import com.test.presentation.mvp.news.INewsContract
@@ -26,17 +34,17 @@ import org.koin.android.ext.android.inject
 import org.koin.android.scope.ext.android.bindScope
 import org.koin.android.scope.ext.android.getOrCreateScope
 import org.koin.core.parameter.parametersOf
-import java.text.SimpleDateFormat
 import java.util.*
+
+const val WRITE_EXTERNAL_STORAGE_REQUEST = 1
 
 class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapterListener {
 
     private val presenter by inject<INewsContract.Presenter>()
     private val router by inject<INewsRouter> { parametersOf(this) }
 
-    lateinit var newsAdapter: NewsAdapter
+    private var newsAdapter: NewsAdapter? = null
 
-    var SIMPLE_DATE_FORMAT: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     var isLoading = false
 
     private var fromDateListener = OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
@@ -92,14 +100,14 @@ class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapter
     }
 
     private fun fillDates() {
-        val fromDate = SIMPLE_DATE_FORMAT.format(DateTime().minusMonths(1).toCalendar(Locale.getDefault()).time)
-        val toDate = SIMPLE_DATE_FORMAT.format(DateTime().toCalendar(Locale.getDefault()).time)
+        val fromDate = `YYYY_MM_DD`.format(DateTime().minusMonths(1).toCalendar(Locale.getDefault()).time)
+        val toDate = `YYYY_MM_DD`.format(DateTime().toCalendar(Locale.getDefault()).time)
         presenter.onFromDateSelected(fromDate)
         presenter.onToDateSelected(toDate)
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter(this)
+        newsAdapter = NewsAdapter(Glide.with(this), this)
         rvNews.adapter = newsAdapter
         rvNews.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         val lm = LinearLayoutManager(this)
@@ -125,7 +133,7 @@ class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapter
 
     override fun renderFromDatePicker(date: String) {
         val cal = Calendar.getInstance()
-        cal.time = SIMPLE_DATE_FORMAT.parse(date)!!
+        cal.time = `YYYY_MM_DD`.parse(date)!!
         DatePickerDialog(this, fromDateListener,
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -187,10 +195,12 @@ class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapter
     }
 
     override fun showNews(news: List<New>, refresh: Boolean) {
-        if (refresh)
-            newsAdapter.newsList.clear()
-        newsAdapter.newsList.addAll(news)
-        newsAdapter.notifyDataSetChanged()
+        newsAdapter?.apply {
+            if (refresh)
+                newsList.clear()
+            newsList.addAll(news)
+            notifyDataSetChanged()
+        }
     }
 
     override fun updateTitle(sort: String) {
@@ -209,14 +219,63 @@ class NewsActivity : BaseActivity(), INewsContract.View, NewsAdapter.NewsAdapter
         toast(message ?: getString(R.string.default_error_message))
     }
 
+    override fun showNewCachedMessage() {
+        toast(R.string.new_cached_successfully_message)
+    }
+
+    override fun updateGalleryInfo(photoPath: String) {
+        MediaScannerConnection.scanFile(this, arrayOf(photoPath), null, null)
+    }
+
+    override fun showWhiteExternalStoragePermissionGrantedMessage() {
+        toast(R.string.access_to_storage_granted)
+    }
+
+    override fun showWhiteExternalStoragePermissionDeniedMessage() {
+        toast(R.string.access_to_storage_denied)
+    }
+
+    override fun onNewClick(new: New) {
+        presenter.onNewClick(new)
+    }
+
+    override fun onNewImageClick(imageUrl: String) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            presenter.onNewImageSaveClick(imageUrl)
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    WRITE_EXTERNAL_STORAGE_REQUEST)
+        }
+    }
+
+    override fun onNewShareClick(title: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_new_subject))
+        intent.putExtra(Intent.EXTRA_TEXT, title)
+        startActivity(Intent.createChooser(intent, getString(R.string.share_new_title)))
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            WRITE_EXTERNAL_STORAGE_REQUEST -> {
+                if (grantResults.isNotEmpty()
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    presenter.onWhiteExternalStoragePermissionGranted()
+                } else {
+                    presenter.onWhiteExternalStoragePermissionDenied()
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     override fun onDestroy() {
         presenter.view = null
         presenter.onUnsubscribe()
         presenter.onDestroy()
         super.onDestroy()
-    }
-
-    override fun onNewClick(new: New) {
-        presenter.onNewClick(new)
+        newsAdapter = null
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.bumptech.glide.Glide
 import com.test.R
 import com.test.di.KOIN_KEY_SCOPE_FAVORITES_ACTIVITY
 import com.test.domain.model.New
@@ -27,7 +28,7 @@ class FavoritesActivity : BaseActivity(), IFavoritesContract.View {
 
     private val presenter by inject<IFavoritesContract.Presenter>()
 
-    lateinit var newsAdapter: NewsAdapter
+    private var newsAdapter: NewsAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +46,7 @@ class FavoritesActivity : BaseActivity(), IFavoritesContract.View {
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter(null)
+        newsAdapter = NewsAdapter(Glide.with(this), null)
         rvFavoriteNews.adapter = newsAdapter
         rvFavoriteNews.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
@@ -54,9 +55,11 @@ class FavoritesActivity : BaseActivity(), IFavoritesContract.View {
     }
 
     override fun showNews(news: List<New>) {
-        newsAdapter.newsList.clear()
-        newsAdapter.newsList.addAll(news)
-        newsAdapter.notifyDataSetChanged()
+        newsAdapter?.apply {
+            newsList.clear()
+            newsList.addAll(news)
+            notifyDataSetChanged()
+        }
     }
 
     override fun showNoNewsError() {
@@ -72,5 +75,6 @@ class FavoritesActivity : BaseActivity(), IFavoritesContract.View {
         presenter.onUnsubscribe()
         presenter.onDestroy()
         super.onDestroy()
+        newsAdapter = null
     }
 }

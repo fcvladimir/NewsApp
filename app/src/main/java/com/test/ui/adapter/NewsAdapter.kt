@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestManager
+import com.test.DD_MM_YYYY_HH_MM_SS
 import com.test.R
 import com.test.domain.model.New
 import kotlinx.android.synthetic.main.item_new.view.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import java.text.SimpleDateFormat
-import java.util.*
 
-class NewsAdapter(private val newsAdapterListener: NewsAdapterListener?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NewsAdapter(private val requestManager: RequestManager, private val newsAdapterListener: NewsAdapterListener?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var newsList = mutableListOf<New>()
 
@@ -34,9 +34,19 @@ class NewsAdapter(private val newsAdapterListener: NewsAdapterListener?) : Recyc
             } else {
                 new.source?.name
             }
-            tvNewDate.text = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault()).format(new.publishedAt)
+            new.publishedAt?.apply {
+                tvNewDate.text = DD_MM_YYYY_HH_MM_SS.format(this)
+            }
             onClick {
                 newsAdapterListener?.onNewClick(new)
+            }
+            requestManager.load(new.urlToImage)
+                    .into(ivNewImage)
+            ivNewImage.onClick {
+                newsAdapterListener?.onNewImageClick(new.urlToImage!!)
+            }
+            btnNewShare.onClick {
+                newsAdapterListener?.onNewShareClick(new.title!!)
             }
         }
     }
@@ -47,5 +57,7 @@ class NewsAdapter(private val newsAdapterListener: NewsAdapterListener?) : Recyc
 
     interface NewsAdapterListener {
         fun onNewClick(new: New)
+        fun onNewImageClick(imageUrl: String)
+        fun onNewShareClick(title: String)
     }
 }

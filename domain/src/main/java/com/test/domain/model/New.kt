@@ -6,7 +6,8 @@ import java.util.*
 data class New(
         val title: String? = null,
         val source: Source? = null,
-        val publishedAt: Date? = null
+        val publishedAt: Date? = null,
+        val urlToImage: String? = null
 ) : Serializable
 
 data class Source(

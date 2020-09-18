@@ -17,13 +17,15 @@ class DataMapper {
         return New(input.title,
                 Source(input.source?.id,
                         input.source?.name),
-                input.publishedAt)
+                input.publishedAt,
+                input.urlToImage)
     }
 
     fun mapToNewEntity(input: New): NewEntity {
         return NewEntity(input.title,
                 SourceEntity(input.source?.id,
                         input.source?.name),
-                input.publishedAt)
+                input.publishedAt,
+                input.urlToImage)
     }
 }

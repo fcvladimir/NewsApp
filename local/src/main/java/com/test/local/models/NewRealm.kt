@@ -9,6 +9,7 @@ open class NewRealm : RealmObject() {
     var title: String? = null
     var source: SourceRealm? = null
     var publishedAt: Date? = null
+    var urlToImage: String? = null
 }
 
 open class SourceRealm : RealmObject() {

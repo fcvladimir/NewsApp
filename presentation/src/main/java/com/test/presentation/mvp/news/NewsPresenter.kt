@@ -3,10 +3,12 @@ package com.test.presentation.mvp.news
 import com.test.domain.model.New
 import com.test.domain.usecase.favorite.DispatchNewToFavoritesUc
 import com.test.domain.usecase.news.FetchNewsUc
+import com.test.domain.usecase.news.SaveImageUc
 
 class NewsPresenter(
         private val fetchNews: FetchNewsUc,
-        private val dispatchNewToFavorites: DispatchNewToFavoritesUc
+        private val dispatchNewToFavorites: DispatchNewToFavoritesUc,
+        private val saveImage: SaveImageUc
 ) : INewsContract.Presenter {
 
     private var page = 1
@@ -106,10 +108,7 @@ class NewsPresenter(
         dispatchNewToFavorites.execute(
                 onSuccess = {
                     view?.renderNetworkProcessing(false)
-//                    if (it.isNotEmpty()) {
-//                        this@NewsPresenter.page = 2
-//                    }
-//                    view?.showNews(it, true)
+                    view?.showNewCachedMessage()
                 },
                 doOnSubscribe = {
                     view?.renderNetworkProcessing(true)
@@ -122,13 +121,40 @@ class NewsPresenter(
         )
     }
 
+    override fun onNewImageSaveClick(imageUrl: String) {
+        saveImage.execute(
+                onSuccess = {
+                    view?.renderNetworkProcessing(false)
+                    view?.updateGalleryInfo(it)
+                },
+                doOnSubscribe = {
+                    view?.renderNetworkProcessing(true)
+                },
+                onError = {
+                    view?.renderNetworkProcessing(false)
+                    view?.showError(it.message)
+                },
+                param = SaveImageUc.Param(imageUrl)
+        )
+    }
+
+    override fun onWhiteExternalStoragePermissionGranted() {
+        view?.showWhiteExternalStoragePermissionGrantedMessage()
+    }
+
+    override fun onWhiteExternalStoragePermissionDenied() {
+        view?.showWhiteExternalStoragePermissionDeniedMessage()
+    }
+
     override fun onUnsubscribe() {
         fetchNews.clear()
         dispatchNewToFavorites.clear()
+        saveImage.clear()
     }
 
     override fun onDestroy() {
         fetchNews.dispose()
         dispatchNewToFavorites.dispose()
+        saveImage.dispose()
     }
 }

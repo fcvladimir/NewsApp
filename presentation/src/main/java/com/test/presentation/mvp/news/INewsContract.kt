@@ -30,6 +30,14 @@ interface INewsContract {
         fun navigateToFavoritesScreen()
 
         fun showError(message: String?)
+
+        fun showNewCachedMessage()
+
+        fun updateGalleryInfo(photoPath: String)
+
+        fun showWhiteExternalStoragePermissionGrantedMessage()
+
+        fun showWhiteExternalStoragePermissionDeniedMessage()
     }
 
     interface Presenter : IBaseContract.Presenter<View> {
@@ -57,5 +65,11 @@ interface INewsContract {
         fun onFilterActionClick()
 
         fun onNewClick(new: New)
+
+        fun onNewImageSaveClick(imageUrl: String)
+
+        fun onWhiteExternalStoragePermissionGranted()
+
+        fun onWhiteExternalStoragePermissionDenied()
     }
 }

@@ -2,6 +2,8 @@
     <string name="app_name">News App</string>
 
     <string name="default_error_message">Error occurred</string>
+    <string name="access_to_storage_granted">Access to storage granted</string>
+    <string name="access_to_storage_denied">Access to storage denied</string>
 
     <!--News Screen-->
     <string name="favorites_action">Favorites</string>
@@ -10,6 +12,9 @@
     <string name="sort_dialog_title">Sort by:</string>
     <string name="filter_dialog_title">Filter:</string>
     <string name="subtitle_no_filter">no filter</string>
+    <string name="new_cached_successfully_message">New was cached successfully</string>
+    <string name="share_new_subject">New to share</string>
+    <string name="share_new_title">Share new to:</string>
 
     <!--Favorites Screen-->
     <string name="favorites_title">Favorite News</string>

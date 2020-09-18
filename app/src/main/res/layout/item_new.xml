@@ -6,6 +6,13 @@
     android:layout_height="wrap_content"
     android:padding="12dp">
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivNewImage"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvNewTitle"
         android:layout_width="match_parent"
@@ -13,7 +20,7 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivNewImage"
         tools:text="SC seeks reply from Centre, DGCA on plea for emergency systems at small airports to avoid accidents" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -36,4 +43,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvNewSource"
         tools:text="2020-09-20" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnNewShare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvNewSource" />
 </androidx.constraintlayout.widget.ConstraintLayout>

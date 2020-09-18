@@ -13,7 +13,10 @@ data class NewsJson(
         val source: SourceJson? = null,
         @SerializedName("publishedAt")
         @Expose
-        val publishedAt: Date? = null
+        val publishedAt: Date? = null,
+        @SerializedName("urlToImage")
+        @Expose
+        val urlToImage: String? = null
 )
 
 data class SourceJson(
